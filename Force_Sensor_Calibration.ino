@@ -1,9 +1,16 @@
+////////////////////////
+//load cell/force sensor preliminaries
 #include "HX711.h"
 
+//defines load cell pins
 const int LOADCELL_DOUT_PIN = 2;
 const int LOADCELL_SCK_PIN = 3;
+
+//defines button and switch pins
 const int buttonPin = 12;
 const int switchPin = 13;
+
+//boolean value that allows void loop to tare one time
 bool tare_done = false;
 
 HX711 scale; 
@@ -22,13 +29,14 @@ void setup() {
 
 void loop() {
 
-  if (digitalRead(switchPin) == 1) {
+  if (digitalRead(switchPin) == 1) { //switch must be turned on to start the program
   
   while (digitalRead(switchPin) == 0) {} //holds here until button is pressed
   
   if (scale.is_ready()){
     scale.set_scale();
-    if (!tare_done){
+
+    if (!tare_done){ //tare will happen one time
     Serial.println("Press button to tare... remove any weights from weight carriage.");
     
     while (digitalRead(buttonPin) == 0) {}  //holds here until button is pressed
@@ -47,8 +55,7 @@ void loop() {
 
     
     while (Serial.available() == 0) {}  //holds here until data is entered to the serial monitor (values, then ENTER key)
-    float weight = Serial.parseFloat();
-
+    float weight = Serial.parseFloat(); //serial input is read
     while (Serial.available() > 0) {  //clears the serial monitor of extraneous data in the serial input
       Serial.read();
     }
@@ -79,5 +86,3 @@ void loop() {
   delay(1000);
 }
 }
-
-//calibration factor will be the (reading)/(known weight)
